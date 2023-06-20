@@ -1,0 +1,32 @@
+const express = require("express");
+const errorMiddleware = require("./middleware/errorMiddleware");
+require("dotenv").config();
+const bodyParser = require("body-parser");
+const cors = require("cors");
+const userRouter = require("./router/user.route");
+const brandRouter = require("./router/brand.route");
+const categroyRouter = require("./router/category.route");
+const locationRouter = require("./router/location.route");
+const cookieParser = require("cookie-parser");
+
+const app = express();
+
+app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
+app.use(bodyParser.json({ limit: "10mb", extended: true }));
+app.use(cors());
+app.use(cookieParser());
+
+app.use("/api/v1", userRouter);
+app.use("/api/v1", brandRouter);
+app.use("/api/v1", categroyRouter);
+app.use("/api/v1", locationRouter);
+
+app.get("/", (_req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "Server is ok",
+  });
+});
+
+app.use(errorMiddleware);
+module.exports = app;
