@@ -35,4 +35,17 @@ exports.getDistricts = asyncError(async (req, res) => {
     data: targetedDistricts,
   });
 });
-exports.getUpazila = asyncError(async (req, res) => {});
+exports.getUpazila = asyncError(async (req, res) => {
+  const district_id = req.params.district_id;
+  const locations = await locationModel.find({});
+  const allUpazilas = locations[0].locations.upazilas;
+  const targetedUpazilas = allUpazilas.filter(
+    (upazila) => upazila.district_id === district_id
+  );
+
+  res.status(200).json({
+    success: true,
+    totalResults: targetedUpazilas.length,
+    data: targetedUpazilas,
+  });
+});
