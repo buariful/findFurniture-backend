@@ -5,10 +5,7 @@ const categorySchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  totalProducts: {
-    type: Number,
-    default: 0,
-  },
+  products: [String],
 });
 
 module.exports = mongoose.model("categoryModel", categorySchema);

@@ -1,4 +1,8 @@
-const { createCategory } = require("../controllers/category.controller");
+const {
+  createCategory,
+  getAllCategory,
+  deleteCategory,
+} = require("../controllers/category.controller");
 const {
   isAuthenticated,
   roleAuthorize,
@@ -7,7 +11,12 @@ const {
 const router = require("express").Router();
 
 router
-  .route("/create-category")
-  .post(isAuthenticated, roleAuthorize(["admin"]), createCategory);
+  .route("/category")
+  .post(isAuthenticated, roleAuthorize(["admin"]), createCategory)
+  .get(getAllCategory);
+
+router
+  .route("/category/:id")
+  .delete(isAuthenticated, roleAuthorize(["admin"]), deleteCategory);
 
 module.exports = router;
