@@ -5,7 +5,12 @@ const categorySchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  products: [String],
+  products: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "ProductModel",
+    },
+  ],
 });
 
 module.exports = mongoose.model("categoryModel", categorySchema);

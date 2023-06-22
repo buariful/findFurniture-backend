@@ -8,10 +8,12 @@ const brandSchema = new mongoose.Schema({
   estabished: {
     type: Date,
   },
-  totalProducts: {
-    type: Number,
-    default: 0,
-  },
+  products: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "ProductModel",
+    },
+  ],
 });
 
 module.exports = mongoose.model("BrandModel", brandSchema);
