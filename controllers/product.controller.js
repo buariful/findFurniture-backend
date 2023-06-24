@@ -1,16 +1,73 @@
 const asyncError = require("../middleware/asyncError");
-const ErrorClass = require("../utils/ErrorClass");
-const cloudinaryConfig = require("../utils/cloudinary");
 const imageUpload = require("../utils/imageUpload");
 const generateProductCode = require("../utils/generateProductCode");
 const productModel = require("../models/product.model");
+const ErrorClass = require("../utils/ErrorClass");
 
-exports.imgUpload = asyncError(async (req, res, next) => {
-  const result = await imageUpload(req);
+exports.getProducts = asyncError(async (req, res) => {
+  const products = await productModel.find({});
 
-  res.json({ data: result });
+  res.status(200).json({
+    success: true,
+    totalResults: products.length,
+    data: products,
+  });
 });
 
+exports.getSingleProduct = asyncError(async (req, res, next) => {
+  const id = req.params.id;
+  const product = await productModel.findById(id);
+
+  if (!product) {
+    return next(new ErrorClass("No product found", 400));
+  }
+
+  res.status(200).json({
+    success: true,
+    data: product,
+  });
+});
+
+// -- Admin
+exports.updateProduct = asyncError(async (req, res, next) => {
+  const id = req.params.id;
+  const updateProductInfo = req.body;
+  const product = await productModel
+    .findByIdAndUpdate(id, updateProductInfo, {
+      new: true,
+    })
+    .populate("brand", "name");
+
+  if (!product) {
+    return next(new ErrorClass("No product found", 400));
+  }
+
+  res.status(200).json({
+    success: true,
+    message: "Product updated successfully",
+    data: product,
+  });
+});
+
+// --Admin
+exports.deleteProduct = asyncError(async (req, res, next) => {
+  const id = req.params.id;
+  const deletedProduct = await productModel.findByIdAndDelete(id, {
+    new: true,
+  });
+
+  if (!deletedProduct) {
+    return next(new ErrorClass("Product not found or cannot be deleted", 400));
+  }
+
+  res.status(200).json({
+    success: true,
+    message: "Product deleted successfully",
+    data: deletedProduct,
+  });
+});
+
+// -- Admin
 exports.createProduct = asyncError(async (req, res, next) => {
   const {
     name,

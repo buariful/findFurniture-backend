@@ -1,6 +1,9 @@
 const {
-  imgUpload,
   createProduct,
+  getProducts,
+  getSingleProduct,
+  updateProduct,
+  deleteProduct,
 } = require("../controllers/product.controller");
 const upload = require("../middleware/multer");
 const {
@@ -18,6 +21,12 @@ router
     upload.array("images", 10),
     createProduct
   );
-router.route("/upload").post(upload.array("images", 10), imgUpload);
+
+router.route("/product").get(getProducts);
+router
+  .route("/product/:id")
+  .get(getSingleProduct)
+  .put(isAuthenticated, roleAuthorize(["admin"]), updateProduct)
+  .delete(isAuthenticated, roleAuthorize(["admin"]), deleteProduct);
 
 module.exports = router;
