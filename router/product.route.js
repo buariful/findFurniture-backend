@@ -4,6 +4,7 @@ const {
   getSingleProduct,
   updateProduct,
   deleteProduct,
+  deleteAllProducts,
 } = require("../controllers/product.controller");
 const upload = require("../middleware/multer");
 const {
@@ -22,7 +23,10 @@ router
     createProduct
   );
 
-router.route("/product").get(getProducts);
+router
+  .route("/product")
+  .get(getProducts)
+  .delete(isAuthenticated, roleAuthorize(["admin"]), deleteAllProducts);
 router
   .route("/product/:id")
   .get(getSingleProduct)

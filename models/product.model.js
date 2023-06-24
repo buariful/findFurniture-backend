@@ -5,6 +5,7 @@ const productSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  colors: [{ type: String, required: true }],
   productCode: {
     type: String,
     required: true,
@@ -52,17 +53,14 @@ const productSchema = new mongoose.Schema({
     default: Date.now,
   },
   brand: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: String,
     required: true,
-    ref: "BrandModel",
   },
   category: {
     type: String,
     required: true,
   },
-  relatedProducts_categories: [
-    { type: mongoose.Schema.Types.ObjectId, ref: "CategoryModel" },
-  ],
+  relatedProducts_categories: [{ type: String }],
   shippingCost: {
     freeShipping: {
       area: [{ type: String, required: true }],

@@ -77,6 +77,7 @@ exports.createProduct = asyncError(async (req, res, next) => {
     category,
     relatedProducts_categories,
     shippingCost,
+    colors,
   } = req.body;
 
   const productCode = await generateProductCode();
@@ -110,14 +111,10 @@ exports.createProduct = asyncError(async (req, res, next) => {
     discount,
     brand,
     category,
+    colors: JSON.parse(colors),
     relatedProducts_categories: JSON.parse(relatedProducts_categories),
     shippingCost: JSON.parse(shippingCost),
     createdBy: req.user._id,
-  });
-
-  newProduct = await productModel.populate(newProduct, {
-    path: "brand",
-    select: "name",
   });
 
   res.status(201).json({
@@ -125,4 +122,14 @@ exports.createProduct = asyncError(async (req, res, next) => {
     message: "Successfully product created",
     data: newProduct,
   });
+});
+
+/* ==========================
+ONLY FOR DEVELOPING PURPOSE, NOT FOR PRODUCTION
+=============================*/
+
+exports.deleteAllProducts = asyncError(async (_req, res) => {
+  const result = await productModel.deleteMany({});
+
+  res.send(result);
 });
