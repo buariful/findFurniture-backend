@@ -7,6 +7,7 @@ const userRouter = require("./router/user.route");
 const brandRouter = require("./router/brand.route");
 const categroyRouter = require("./router/category.route");
 const locationRouter = require("./router/location.route");
+const productRoute = require("./router/product.route");
 const cookieParser = require("cookie-parser");
 
 const app = express();
@@ -17,6 +18,7 @@ app.use(cors());
 app.use(cookieParser());
 
 app.use("/api/v1", userRouter);
+app.use("/api/v1", productRoute);
 app.use("/api/v1", brandRouter);
 app.use("/api/v1", categroyRouter);
 app.use("/api/v1", locationRouter);

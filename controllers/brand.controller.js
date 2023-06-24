@@ -21,7 +21,6 @@ exports.createBrand = asyncError(async (req, res, next) => {
   if (isBrandExist) {
     return next(new ErrorClass("Brand Exist", 400));
   }
-
   const brand = await brandModel.create({
     name,
     estabished,

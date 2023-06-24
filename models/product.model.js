@@ -37,6 +37,11 @@ const productSchema = new mongoose.Schema({
   },
   sellPrice: {
     type: Number,
+    default: null,
+  },
+  discount: {
+    type: Number,
+    default: null,
   },
   totalSales: {
     type: Number,
@@ -46,31 +51,32 @@ const productSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-  brandName: {
+  brand: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
     ref: "BrandModel",
   },
   category: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: String,
     required: true,
-    ref: "CategoryModel",
   },
   relatedProducts_categories: [
     { type: mongoose.Schema.Types.ObjectId, ref: "CategoryModel" },
   ],
   shippingCost: {
     freeShipping: {
-      area: [{ type: String }],
-      price: { type: Number },
-      time: { type: Number },
+      area: [{ type: String, required: true }],
+      time: { type: String, required: true },
     },
     lowShipping: {
-      area: [{ type: String }],
-      price: { type: Number },
-      time: { type: Number },
+      area: [{ type: String, required: true }],
+      price: { type: Number, required: true },
+      time: { type: String, required: true },
     },
-    highPrice: { price: { type: Number }, time: { type: Number } },
+    highShipping: {
+      price: { type: Number, required: true },
+      time: { type: String, required: true },
+    },
   },
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
