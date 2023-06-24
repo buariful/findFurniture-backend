@@ -17,15 +17,8 @@ exports.getProducts = asyncError(async (req, res) => {
 
   products = await result.query;
 
-  // const a = await productModel.find({
-  //   colors: { $in: ["yellow", "ss"] },
-  // });
-
-  // const a = await productModel.find({ colors: { $in: ["blue", "red"] } });
-
   res.status(200).json({
     success: true,
-    // a,
     totalResults: filteredProductsCount,
     data: products,
   });
@@ -99,30 +92,16 @@ exports.createProduct = asyncError(async (req, res, next) => {
 
   const productCode = await generateProductCode();
 
-  // let images = [];
-  // let thumbImg;
-  // const imgLinks = await imageUpload(req);
-  // for (let i = 0; i < imgLinks.length; i++) {
-  //   if (i === 0) {
-  //     thumbImg = imgLinks[0];
-  //   } else {
-  //     images.push(imgLinks[i]);
-  //   }
-  // }
-  let thumbImg = {
-    publicId: "findFurniture/rfewiwbtjy7pgod4lss4",
-    url: "https://res.cloudinary.com/dygolqxi7/image/upload/v1687608264/findFurniture/rfewiwbtjy7pgod4lss4.jpg",
-  };
-  let images = [
-    {
-      publicId: "findFurniture/rfewiwbtjy7pgod4lss4",
-      url: "https://res.cloudinary.com/dygolqxi7/image/upload/v1687608264/findFurniture/rfewiwbtjy7pgod4lss4.jpg",
-    },
-    {
-      publicId: "findFurniture/rfewiwbtjy7pgod4lss4",
-      url: "https://res.cloudinary.com/dygolqxi7/image/upload/v1687608264/findFurniture/rfewiwbtjy7pgod4lss4.jpg",
-    },
-  ];
+  let images = [];
+  let thumbImg;
+  const imgLinks = await imageUpload(req);
+  for (let i = 0; i < imgLinks.length; i++) {
+    if (i === 0) {
+      thumbImg = imgLinks[0];
+    } else {
+      images.push(imgLinks[i]);
+    }
+  }
 
   let discount;
   if (!sellPrice) {
