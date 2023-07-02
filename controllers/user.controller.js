@@ -33,12 +33,12 @@ exports.login = asyncError(async (req, res, next) => {
   const { email, password } = req.body;
   const user = await userModel.findOne({ email }).select("+password");
   if (!user) {
-    return next(new ErrorClass("User not found 1", 401));
+    return next(new ErrorClass("Email or Password doesn't matched", 401));
   }
 
   const isPasswrodMatched = await user.comparePassword(password);
   if (!isPasswrodMatched) {
-    return next(new ErrorClass("User not found 2", 401));
+    return next(new ErrorClass("Email or Password doesn't matched", 401));
   }
   setCookie(user, 200, res, "Login Successful");
 });
