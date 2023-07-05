@@ -48,6 +48,10 @@ class ProductFilter {
     if (discount === "true") {
       filter.discount = { $gt: 0 };
     }
+
+    if (discount === "false") {
+      filter.discount = null;
+    }
     this.query = this.query.find(filter);
     return this;
   }

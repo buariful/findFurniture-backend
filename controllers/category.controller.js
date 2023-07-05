@@ -1,5 +1,6 @@
 const asyncError = require("../middleware/asyncError");
 const categoryModel = require("../models/category.model");
+const productModel = require("../models/product.model");
 const ErrorClass = require("../utils/ErrorClass");
 
 exports.getAllCategory = asyncError(async (_req, res) => {
@@ -33,7 +34,11 @@ exports.deleteCategory = asyncError(async (req, res, next) => {
     return next(new ErrorClass("Categroy not found", 400));
   }
 
-  if (targeted_category.products.length === 0) {
+  const products = await productModel.find({
+    category: targeted_category.name,
+  });
+
+  if (products.length === 0) {
     const result = await categoryModel.findByIdAndDelete(categoryId);
 
     return res.status(200).json({

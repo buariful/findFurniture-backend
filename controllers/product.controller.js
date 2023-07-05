@@ -17,6 +17,13 @@ exports.getProducts = asyncError(async (req, res) => {
 
   products = await result.query;
 
+  if (filteredProductsCount === 0) {
+    return res.status(400).json({
+      success: false,
+      data: [],
+    });
+  }
+
   res.status(200).json({
     success: true,
     totalResults: filteredProductsCount,

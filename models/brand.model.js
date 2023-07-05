@@ -8,12 +8,12 @@ const brandSchema = new mongoose.Schema({
   estabished: {
     type: Date,
   },
-  products: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "ProductModel",
-    },
-  ],
+  // products: [
+  //   {
+  //     type: mongoose.Schema.Types.ObjectId,
+  //     ref: "ProductModel",
+  //   },
+  // ],
 });
 
 module.exports = mongoose.model("BrandModel", brandSchema);
