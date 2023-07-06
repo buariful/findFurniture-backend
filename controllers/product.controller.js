@@ -20,6 +20,7 @@ exports.getProducts = asyncError(async (req, res) => {
   if (filteredProductsCount === 0) {
     return res.status(400).json({
       success: false,
+      message: "no products found",
       data: [],
     });
   }
