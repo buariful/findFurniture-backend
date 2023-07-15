@@ -1,5 +1,6 @@
 const asyncError = require("../middleware/asyncError");
 const locationModel = require("../models/location.model");
+const ErrorClass = require("../utils/ErrorClass");
 
 exports.insertLocations = asyncError(async (req, res) => {
   const result = await locationModel.create({ locations: req.body });
@@ -10,9 +11,29 @@ exports.insertLocations = asyncError(async (req, res) => {
   });
 });
 
-exports.getDivisions = asyncError(async (_req, res) => {
+exports.getDivisions = asyncError(async (req, res) => {
   const locations = await locationModel.find({});
-  const result = locations[0].locations.divisions;
+  let result = locations[0].locations.divisions;
+
+  res.status(200).json({
+    success: true,
+    totalResults: result.length,
+    data: result,
+  });
+});
+
+exports.getAllLocations = asyncError(async (req, res) => {
+  const keyword = req.params.keyword;
+  const locations = await locationModel.find({});
+  let result;
+
+  if (keyword === "division") {
+    result = locations[0].locations.divisions;
+  } else if (keyword === "district") {
+    result = locations[0].locations.districts;
+  } else {
+    return next(new ErrorClass("keyword not correct", 400));
+  }
 
   res.status(200).json({
     success: true,

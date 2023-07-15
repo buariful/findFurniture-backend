@@ -16,7 +16,6 @@ const imageUpload = async (req) => {
       });
     })
   );
-
   return result;
 };
 

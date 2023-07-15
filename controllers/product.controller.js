@@ -13,7 +13,7 @@ exports.getProducts = asyncError(async (req, res) => {
   let products = await result.query;
   let filteredProductsCount = products.length;
 
-  result.pagination(4);
+  result.pagination(10);
 
   products = await result.query;
 
@@ -98,6 +98,18 @@ exports.createProduct = asyncError(async (req, res, next) => {
     colors,
   } = req.body;
 
+  // console.log(
+  //   "product.controller.js theke",
+  //   name,
+  //   price,
+  //   sellPrice,
+  //   brand,
+  //   category,
+  //   relatedProducts_categories,
+  //   shippingCost,
+  //   colors
+  // );
+
   const productCode = await generateProductCode();
 
   let images = [];
@@ -134,7 +146,6 @@ exports.createProduct = asyncError(async (req, res, next) => {
     shippingCost: JSON.parse(shippingCost),
     createdBy: req.user._id,
   });
-
   res.status(201).json({
     success: true,
     message: "Successfully product created",

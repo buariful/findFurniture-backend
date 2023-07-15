@@ -61,7 +61,7 @@ const productSchema = new mongoose.Schema({
     required: true,
   },
   relatedProducts_categories: [{ type: String }],
-  ratings: [{ type: mongoose.Types.ObjectId, ref: "reviewModel" }],
+  reviews: [{ type: mongoose.Types.ObjectId, ref: "reviewModel" }],
   avg_rating: { type: Number, default: 0 },
   shippingCost: {
     freeShipping: {
@@ -78,6 +78,7 @@ const productSchema = new mongoose.Schema({
       time: { type: String, required: true },
     },
   },
+  description: { type: String },
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "UserModel",
