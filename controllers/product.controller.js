@@ -96,31 +96,29 @@ exports.createProduct = asyncError(async (req, res, next) => {
     relatedProducts_categories,
     shippingCost,
     colors,
+    description,
   } = req.body;
 
-  // console.log(
-  //   "product.controller.js theke",
-  //   name,
-  //   price,
-  //   sellPrice,
-  //   brand,
-  //   category,
-  //   relatedProducts_categories,
-  //   shippingCost,
-  //   colors
-  // );
-
+  if (
+    !name ||
+    !price ||
+    !sellPrice ||
+    !brand ||
+    !category ||
+    !relatedProducts_categories ||
+    !shippingCost ||
+    !colors ||
+    !description ||
+    !stock
+  ) {
+    return next(new ErrorClass("Please give all the details", 400));
+  }
   const productCode = await generateProductCode();
 
   let images = [];
-  let thumbImg;
   const imgLinks = await imageUpload(req);
   for (let i = 0; i < imgLinks.length; i++) {
-    if (i === 0) {
-      thumbImg = imgLinks[0];
-    } else {
-      images.push(imgLinks[i]);
-    }
+    images.push(imgLinks[i]);
   }
 
   let discount;
@@ -134,7 +132,6 @@ exports.createProduct = asyncError(async (req, res, next) => {
   let newProduct = await productModel.create({
     name,
     productCode,
-    thumbImg,
     images,
     price,
     sellPrice,
@@ -145,6 +142,8 @@ exports.createProduct = asyncError(async (req, res, next) => {
     relatedProducts_categories: JSON.parse(relatedProducts_categories),
     shippingCost: JSON.parse(shippingCost),
     createdBy: req.user._id,
+    description,
+    stock,
   });
   res.status(201).json({
     success: true,
