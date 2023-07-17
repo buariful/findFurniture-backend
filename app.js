@@ -8,6 +8,7 @@ const brandRouter = require("./router/brand.route");
 const categroyRouter = require("./router/category.route");
 const locationRouter = require("./router/location.route");
 const productRoute = require("./router/product.route");
+const reviewRoute = require("./router/review.route");
 const cookieParser = require("cookie-parser");
 
 const app = express();
@@ -22,6 +23,7 @@ app.use("/api/v1", productRoute);
 app.use("/api/v1", brandRouter);
 app.use("/api/v1", categroyRouter);
 app.use("/api/v1", locationRouter);
+app.use("/api/v1", reviewRoute);
 
 app.get("/", (_req, res) => {
   res.status(200).json({

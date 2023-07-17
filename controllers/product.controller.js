@@ -97,6 +97,7 @@ exports.createProduct = asyncError(async (req, res, next) => {
     shippingCost,
     colors,
     description,
+    stock,
   } = req.body;
 
   if (
@@ -113,6 +114,8 @@ exports.createProduct = asyncError(async (req, res, next) => {
   ) {
     return next(new ErrorClass("Please give all the details", 400));
   }
+  // console.log(JSON.parseInt(stock));
+
   const productCode = await generateProductCode();
 
   let images = [];
