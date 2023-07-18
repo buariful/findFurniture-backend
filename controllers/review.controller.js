@@ -16,10 +16,10 @@ exports.createReview = asyncError(async (req, res, next) => {
   }
 
   const review = await reviewModel.find({
-    userId: req.user._ie,
+    userId: req.user._id,
     productId,
   });
-  if (review) {
+  if (review.length > 0) {
     return next(
       new ErrorClass("Already given a review. Now you can update your review")
     );
@@ -55,7 +55,6 @@ exports.updateReview = asyncError(async (req, res, next) => {
   if (updateReviewData.rating) {
     const { productId, rating } = review[0];
     const product = await productModel.findById(productId);
-
     if (product) {
       const ratignDiff = updateReviewData.rating - rating;
       product.totalRating += ratignDiff;
@@ -63,6 +62,7 @@ exports.updateReview = asyncError(async (req, res, next) => {
       product.save();
     }
   }
+
   const updatedReview = await reviewModel.findByIdAndUpdate(
     id,
     updateReviewData,
@@ -108,14 +108,10 @@ exports.deleteSingleReview = asyncError(async (req, res, next) => {
 });
 
 exports.getUserAllReviews = asyncError(async (req, res) => {
-  //   console.log("sssssssssss", req.user._id);
+  const reviews = await reviewModel.find({ userId: req.user._id });
 
-  //   const reviews = await reviewModel.find({ userId: req.user._id });
-
-  //   res.status(200).json({
-  //     success: true,
-  //     data: reviews,
-  //   });
-
-  res.send("ddd");
+  res.status(200).json({
+    success: true,
+    data: reviews,
+  });
 });

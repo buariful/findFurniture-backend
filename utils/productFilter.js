@@ -55,6 +55,7 @@ class ProductFilter {
     if (discount === "false") {
       filter.discount = null;
     }
+    
     this.query = this.query.find(filter);
     return this;
   }

@@ -9,7 +9,6 @@ const {
   isAuthenticated,
   roleAuthorize,
 } = require("../middleware/authentication");
-
 const router = require("express").Router();
 
 router
@@ -22,7 +21,7 @@ router
   .delete(isAuthenticated, roleAuthorize(["user"]), deleteSingleReview);
 
 router
-  .route("/review/myreviews")
+  .route("/user-reviews")
   .get(isAuthenticated, roleAuthorize(["user"]), getUserAllReviews);
 
 module.exports = router;
