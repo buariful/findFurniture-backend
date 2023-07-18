@@ -76,6 +76,12 @@ exports.updateReview = asyncError(async (req, res, next) => {
   });
 });
 
+exports.getProductReviews = asyncError(async (req, res, next) => {
+  const productId = req.params.productId;
+  const review = await reviewModel.find({ productId: productId });
+
+  res.status(200).json({ success: true, data: review });
+});
 exports.getSingleReview = asyncError(async (req, res, next) => {
   const id = req.params.id;
   const review = await reviewModel.findById(id);

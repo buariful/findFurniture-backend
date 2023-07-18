@@ -4,6 +4,7 @@ const {
   getSingleReview,
   deleteSingleReview,
   getUserAllReviews,
+  getProductReviews,
 } = require("../controllers/review.controller");
 const {
   isAuthenticated,
@@ -19,6 +20,8 @@ router
   .put(isAuthenticated, roleAuthorize(["user"]), updateReview)
   .get(isAuthenticated, roleAuthorize(["user"]), getSingleReview)
   .delete(isAuthenticated, roleAuthorize(["user"]), deleteSingleReview);
+
+router.route("/product-review/:productId").get(getProductReviews);
 
 router
   .route("/user-reviews")
