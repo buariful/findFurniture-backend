@@ -18,7 +18,7 @@ router
 router
   .route("/review/:id")
   .put(isAuthenticated, roleAuthorize(["user"]), updateReview)
-  .get(isAuthenticated, roleAuthorize(["user"]), getSingleReview)
+  .get(isAuthenticated, getSingleReview)
   .delete(isAuthenticated, roleAuthorize(["user"]), deleteSingleReview);
 
 router.route("/product-review/:productId").get(getProductReviews);

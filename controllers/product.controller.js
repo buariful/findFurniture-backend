@@ -4,6 +4,7 @@ const generateProductCode = require("../utils/generateProductCode");
 const productModel = require("../models/product.model");
 const ErrorClass = require("../utils/ErrorClass");
 const ProductFilter = require("../utils/productFilter");
+const getRandomProducts = require("../utils/getRandomProducts");
 
 exports.getProducts = asyncError(async (req, res) => {
   const result = new ProductFilter(productModel.find(), req.query)
@@ -35,14 +36,18 @@ exports.getProducts = asyncError(async (req, res) => {
 exports.getSingleProduct = asyncError(async (req, res, next) => {
   const id = req.params.id;
   const product = await productModel.findById(id);
-
   if (!product) {
     return next(new ErrorClass("No product found", 400));
   }
 
+  const relatedProducts = await getRandomProducts(
+    product.relatedProducts_categories
+  );
+
   res.status(200).json({
     success: true,
     data: product,
+    relatedProducts,
   });
 });
 
@@ -114,7 +119,15 @@ exports.createProduct = asyncError(async (req, res, next) => {
   ) {
     return next(new ErrorClass("Please give all the details", 400));
   }
-  // console.log(JSON.parseInt(stock));
+
+  const related_Categories = JSON.parse(relatedProducts_categories);
+  if (related_Categories.includes(category)) {
+    return next(
+      new ErrorClass(
+        "Related product categories should not include product category"
+      )
+    );
+  }
 
   const productCode = await generateProductCode();
 
@@ -142,7 +155,7 @@ exports.createProduct = asyncError(async (req, res, next) => {
     brand,
     category,
     colors: JSON.parse(colors),
-    relatedProducts_categories: JSON.parse(relatedProducts_categories),
+    relatedProducts_categories: related_Categories,
     shippingCost: JSON.parse(shippingCost),
     createdBy: req.user._id,
     description,

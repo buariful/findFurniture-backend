@@ -16,8 +16,8 @@ exports.createReview = asyncError(async (req, res, next) => {
   }
 
   const review = await reviewModel.find({
-    userId: req.user._id,
-    productId,
+    user: req.user._id,
+    product: productId,
   });
   if (review.length > 0) {
     return next(
@@ -26,10 +26,10 @@ exports.createReview = asyncError(async (req, res, next) => {
   }
 
   const newReview = await reviewModel.create({
-    productId,
+    product: productId,
     comment,
     rating,
-    userId: req.user._id,
+    user: req.user._id,
   });
 
   product.totalReviews += 1;
@@ -47,19 +47,20 @@ exports.createReview = asyncError(async (req, res, next) => {
 exports.updateReview = asyncError(async (req, res, next) => {
   const { id } = req.params;
   const updateReviewData = req.body;
-  let review = await reviewModel.find({ userId: req.user._id, _id: id });
+  let review = await reviewModel.find({ user: req.user._id, _id: id });
 
   if (!review.length > 0) {
     return next(new ErrorClass("review not found", 400));
   }
   if (updateReviewData.rating) {
-    const { productId, rating } = review[0];
-    const product = await productModel.findById(productId);
-    if (product) {
+    const { product, rating } = review[0];
+    const targetedProduct = await productModel.findById(product);
+    if (targetedProduct) {
       const ratignDiff = updateReviewData.rating - rating;
-      product.totalRating += ratignDiff;
-      product.avg_rating = product.totalRating / product.totalReviews;
-      product.save();
+      targetedProduct.totalRating += ratignDiff;
+      targetedProduct.avg_rating =
+        targetedProduct.totalRating / targetedProduct.totalReviews;
+      targetedProduct.save();
     }
   }
 
@@ -78,7 +79,9 @@ exports.updateReview = asyncError(async (req, res, next) => {
 
 exports.getProductReviews = asyncError(async (req, res, next) => {
   const productId = req.params.productId;
-  const review = await reviewModel.find({ productId: productId });
+  const review = await reviewModel
+    .find({ product: productId })
+    .populate("user", "name avatar");
 
   res.status(200).json({ success: true, data: review });
 });
@@ -96,7 +99,7 @@ exports.deleteSingleReview = asyncError(async (req, res, next) => {
   const id = req.params.id;
   const review = await reviewModel.findById(id);
 
-  const product = await productModel.findById(review.productId);
+  const product = await productModel.findById(review.product);
   if (product) {
     product.totalRating -= review.rating;
     product.totalReviews -= 1;
@@ -114,7 +117,7 @@ exports.deleteSingleReview = asyncError(async (req, res, next) => {
 });
 
 exports.getUserAllReviews = asyncError(async (req, res) => {
-  const reviews = await reviewModel.find({ userId: req.user._id });
+  const reviews = await reviewModel.find({ user: req.user._id });
 
   res.status(200).json({
     success: true,
