@@ -31,7 +31,10 @@ exports.registerUser = asyncError(async (req, res, next) => {
 
 exports.login = asyncError(async (req, res, next) => {
   const { email, password } = req.body;
-  const user = await userModel.findOne({ email }).select("+password");
+  const user = await userModel
+    .findOne({ email })
+    .select("+password")
+    .populate("cartItem.product", "name productCode price sellPrice images");
   if (!user) {
     return next(new ErrorClass("Email or Password doesn't matched", 401));
   }
@@ -60,4 +63,65 @@ exports.getUserByCookie = asyncError((req, res) => {
     success: true,
     data: req.user,
   });
+});
+
+exports.addProdToCart = asyncError(async (req, res, next) => {
+  const { productId, quantity } = req.body;
+  const user = await userModel.findById(req.user._id);
+
+  const isProdExist = user.cartItem.find(
+    (cart) => cart.product.toString() === productId
+  );
+  if (isProdExist) {
+    return next(new ErrorClass("Product already exist in your cart", 400));
+  }
+
+  user.cartItem.push({
+    product: productId,
+    quantity,
+  });
+  await user.save();
+
+  res.status(200).json({
+    success: true,
+    data: user.cartItem,
+  });
+});
+
+exports.deleteProdFromCart = asyncError(async (req, res) => {
+  const { productId } = req.body;
+  const user = await userModel.findById(req.user._id);
+
+  const newCartItems = user.cartItem.filter(
+    (cart) => cart.product.toString() !== productId
+  );
+  user.cartItem = newCartItems;
+  await user.save();
+
+  res.status(200).json({
+    success: true,
+    message: "Product removed from cart successfully",
+    data: user.cartItem,
+  });
+});
+
+exports.updateQuantityOfCartProduct = asyncError(async (req, res, next) => {
+  const { productId, quantity } = req.body;
+  if (!productId || !quantity || quantity <= 0) {
+    return next(
+      new ErrorClass("Given informatin are not enough or not coreect", 400)
+    );
+  }
+
+  const user = await userModel.findById(req.user._id);
+  const productIndex = user.cartItem.findIndex(
+    (cart) => cart.product.toString() === productId
+  );
+  const product = user.cartItem[productIndex];
+  product.quantity = quantity;
+
+  user.cartItem.splice(productIndex, 1, product);
+  await user.save();
+
+  res.status(200).json({ success: true, data: user.cartItem });
 });

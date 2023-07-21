@@ -5,6 +5,7 @@ exports.setCookie = async (user, statusCode, res, message) => {
     expires: new Date(Date.now() + 3600 * 24 * 1000 * 5),
     httpOnly: true,
   };
+
   const userWithoutPassword = user.toObject();
   delete userWithoutPassword.password;
 

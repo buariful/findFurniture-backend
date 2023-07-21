@@ -3,8 +3,14 @@ const {
   login,
   logOut,
   getUserByCookie,
+  addProdToCart,
+  deleteProdFromCart,
+  updateQuantityOfCartProduct,
 } = require("../controllers/user.controller");
-const { isAuthenticated } = require("../middleware/authentication");
+const {
+  isAuthenticated,
+  roleAuthorize,
+} = require("../middleware/authentication");
 const multer = require("../middleware/multer");
 
 const router = require("express").Router();
@@ -13,6 +19,15 @@ router.route("/register").post(multer.single("image"), registerUser);
 router.route("/login").post(login);
 router.route("/logout").post(logOut);
 router.route("/getuserby-cookie").get(isAuthenticated, getUserByCookie);
+router
+  .route("/cart/new")
+  .post(isAuthenticated, roleAuthorize(["user"]), addProdToCart);
+router
+  .route("/cart/delete")
+  .put(isAuthenticated, roleAuthorize(["user"]), deleteProdFromCart);
+router
+  .route("/cart/update")
+  .put(isAuthenticated, roleAuthorize(["user"]), updateQuantityOfCartProduct);
 // router
 //   .route("/abc")
 //   .get(isAuthenticated, roleAuthorize(["admin", "sss", "de", "user"]));

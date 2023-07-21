@@ -28,14 +28,20 @@ const userSchema = new mongoose.Schema({
     default: {
       type: String,
       default:
-        "https://res.cloudinary.com/dygolqxi7/image/upload/v1687264280/FindFurniture/demo_avtar_gm2jnk.jpg",
+        "https://res.cloudinary.com/dygolqxi7/image/upload/v1689775723/FindFurniture/demo_avtar_rwreos.jpg",
     },
   },
   role: {
     type: String,
     default: "user",
   },
-  cartItem: [{ type: mongoose.Schema.Types.ObjectId, ref: "ProductModel" }],
+  cartItem: [
+    {
+      product: { type: mongoose.Schema.Types.ObjectId, ref: "ProductModel" },
+      quantity: { type: Number, default: 1 },
+    },
+  ],
+  wishList: [{ type: mongoose.Schema.Types.ObjectId, ref: "ProductModel" }],
 });
 
 // ================password hashed================
