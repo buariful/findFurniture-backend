@@ -66,7 +66,7 @@ exports.getUserByCookie = asyncError((req, res) => {
 });
 
 exports.addProdToCart = asyncError(async (req, res, next) => {
-  const { productId, quantity } = req.body;
+  const { productId } = req.body;
   const user = await userModel.findById(req.user._id);
 
   const isProdExist = user.cartItem.find(
@@ -78,13 +78,14 @@ exports.addProdToCart = asyncError(async (req, res, next) => {
 
   user.cartItem.push({
     product: productId,
-    quantity,
+    quantity: 1,
   });
   await user.save();
 
   res.status(200).json({
     success: true,
-    data: user.cartItem,
+    data: user.cartItem[user.cartItem.length - 1],
+    message: "Successfully added the product to cart",
   });
 });
 
@@ -124,4 +125,37 @@ exports.updateQuantityOfCartProduct = asyncError(async (req, res, next) => {
   await user.save();
 
   res.status(200).json({ success: true, data: user.cartItem });
+});
+
+exports.addProdToWishlist = asyncError(async (req, res, next) => {
+  const user = await userModel.findById(req.user._id);
+  const { productId } = req.body;
+  const isProdExist = await user.wishList.find(
+    (list) => list.toString() === productId
+  );
+  if (isProdExist) {
+    return next(new ErrorClass("Product exist in your wishlist"));
+  }
+  user.wishList.push(productId);
+  await user.save();
+
+  res.status(200).json({
+    success: true,
+    message: "Successfully added the product",
+  });
+});
+
+exports.deletProdFromWishList = asyncError(async (req, res, next) => {
+  const user = await userModel.findById(req.user._id);
+  const { productId } = req.body;
+  const productIndex = await user.wishList.findIndex(
+    (list) => list.toString() === productId
+  );
+  user.wishList.splice(productIndex, 1);
+  await user.save();
+
+  res.status(200).json({
+    success: true,
+    message: "Successfully removed the product",
+  });
 });

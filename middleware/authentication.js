@@ -12,7 +12,13 @@ exports.isAuthenticated = asyncError(async (req, res, next) => {
 
   const token = auth.split(" ")[1];
   const getJwtData = await jwt.verify(token, process.env.JWT_SECRET);
-  req.user = await userModel.findById(getJwtData.id);
+  req.user = await userModel
+    .findById(getJwtData.id)
+    .populate(
+      "cartItem.product",
+      "name productCode price sellPrice images stock"
+    )
+    .populate("wishList", "name productCode price sellPrice images stock");
 
   next();
 });
