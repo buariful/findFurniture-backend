@@ -16,7 +16,7 @@ exports.isAuthenticated = asyncError(async (req, res, next) => {
     .findById(getJwtData.id)
     .populate(
       "cartItem.product",
-      "name productCode price sellPrice images stock"
+      "name productCode price sellPrice images stock shippingCost"
     )
     .populate("wishList", "name productCode price sellPrice images stock");
 

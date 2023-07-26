@@ -63,7 +63,7 @@ const productSchema = new mongoose.Schema({
   shippingCost: {
     freeShipping: {
       area: [{ type: String }],
-      time: { type: String },
+      time: { type: Number },
     },
     lowShipping: {
       area: [
@@ -74,7 +74,7 @@ const productSchema = new mongoose.Schema({
         required: [true, "Please enter low shipping cost"],
       },
       time: {
-        type: String,
+        type: Number,
         required: [true, "Please enter low shipping time"],
       },
     },
@@ -84,7 +84,7 @@ const productSchema = new mongoose.Schema({
         required: [true, "Please enter high shipping cost"],
       },
       time: {
-        type: String,
+        type: Number,
         required: [true, "Please enter high shipping time"],
       },
     },

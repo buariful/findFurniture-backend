@@ -34,7 +34,10 @@ exports.login = asyncError(async (req, res, next) => {
   const user = await userModel
     .findOne({ email })
     .select("+password")
-    .populate("cartItem.product", "name productCode price sellPrice images");
+    .populate(
+      "cartItem.product",
+      "name productCode price sellPrice images shippingCost"
+    );
   if (!user) {
     return next(new ErrorClass("Email or Password doesn't matched", 401));
   }
