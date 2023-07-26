@@ -5,11 +5,11 @@ const productModel = require("../models/product.model");
 const orderModel = require("../models/order.model");
 const ErrorClass = require("../utils/ErrorClass");
 const userModel = require("../models/user.model");
+const { orderDelete } = require("../utils/orderDelete");
 
 exports.placeOrder = asyncError(async (req, res, next) => {
   const { products, shipping_time, shipping_cost, address, personalInfo } =
     req.body;
-  // console.log(products, shipping_cost, shipping_time, address);
   const { STORE_ID, STORE_PASSWORD, BACKEND_URL } = process.env;
   const is_live = false; //true for live, false for sandbox
   const trans_id = new mongoose.Types.ObjectId().toString();
@@ -81,6 +81,18 @@ exports.orderSuccess = asyncError(async (req, res) => {
   await user.save();
 
   res.redirect(`${process.env.ORDER_SUCCESS_REDIRECT_URL}/${trans_id}`);
+});
+
+exports.orderFail = asyncError(async (req, res) => {
+  const trans_id = req.params.trans_id;
+  orderDelete(trans_id);
+  res.redirect(`${process.env.ORDER_FAIL_REDIRECT_URL}/${trans_id}`);
+});
+
+exports.orderCancel = asyncError(async (req, res) => {
+  const trans_id = req.params.trans_id;
+  orderDelete(trans_id);
+  res.redirect(`${process.env.ORDER_CANCEL_REDIRECT_URL}`);
 });
 
 exports.getOneOrder = asyncError(async (req, res, next) => {
