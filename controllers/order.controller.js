@@ -108,3 +108,30 @@ exports.getOneOrder = asyncError(async (req, res, next) => {
     data: order,
   });
 });
+
+exports.getUserOrders = asyncError(async (req, res, next) => {
+  const userId = req.user._id;
+  const orders = await orderModel
+    .find({
+      customer: userId,
+    })
+    .populate("products");
+  if (orders.length < 1) {
+    return next(new ErrorClass("You haven't place any order yet.", 400));
+  }
+
+  res.status(200).json({
+    success: true,
+    totalResult: orders.length,
+    data: orders,
+  });
+});
+exports.getAllOrders = asyncError(async (req, res) => {
+  const orders = await orderModel.find({}).populate("products");
+
+  res.status(200).json({
+    success: true,
+    totalResult: orders.length,
+    data: orders,
+  });
+});

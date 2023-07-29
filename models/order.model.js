@@ -27,11 +27,12 @@ const orderSchema = new mongoose.Schema({
   products: [
     {
       type: mongoose.Types.ObjectId,
-      required: [true, "product is undefined"],
+      required: [true, "Product is undefined"],
       ref: "ProductModel",
     },
   ],
   isPaid: { type: Boolean, required: true, default: false },
+  isDelivered: { type: Boolean, required: true, default: false },
 });
 
 module.exports = mongoose.model("OrderModel", orderSchema);

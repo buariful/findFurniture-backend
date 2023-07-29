@@ -4,6 +4,8 @@ const {
   getOneOrder,
   orderCancel,
   orderFail,
+  getAllOrders,
+  getUserOrders,
 } = require("../controllers/order.controller");
 const {
   isAuthenticated,
@@ -22,5 +24,11 @@ router.route("/order/fail/:trans_id").post(orderFail);
 router
   .route("/order/get-one/:trans_id")
   .get(isAuthenticated, roleAuthorize(["user"]), getOneOrder);
+router
+  .route("/order/myorders")
+  .get(isAuthenticated, roleAuthorize(["user"]), getUserOrders);
+router
+  .route("/order/all")
+  .get(isAuthenticated, roleAuthorize(["admin"]), getAllOrders);
 
 module.exports = router;

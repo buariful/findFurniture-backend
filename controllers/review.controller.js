@@ -2,22 +2,60 @@ const asyncError = require("../middleware/asyncError");
 const productModel = require("../models/product.model");
 const reviewModel = require("../models/review.model");
 const ErrorClass = require("../utils/ErrorClass");
-const Errorclass = require("../utils/ErrorClass");
 
+// exports.createReview = asyncError(async (req, res, next) => {
+//   const { productId, comment, rating } = req.body;
+//   if (!productId || !rating) {
+//     return next(new ErrorClass("Please give ratings and other info", 400));
+//   }
+
+//   const product = await productModel.findById(productId);
+//   if (!product) {
+//     return next(new ErrorClass("Product not found", 400));
+//   }
+
+//   const review = await reviewModel.find({
+//     user: req.user._id,
+//     product: productId,
+//   });
+//   if (review.length > 0) {
+//     return next(
+//       new ErrorClass("Already given a review. Now you can update your review")
+//     );
+//   }
+
+//   const newReview = await reviewModel.create({
+//     product: productId,
+//     comment,
+//     rating,
+//     user: req.user._id,
+//   });
+
+//   product.totalReviews += 1;
+//   product.totalRating += rating;
+//   product.avg_rating = product.totalRating / product.totalReviews;
+//   await product.save();
+
+//   res.status(201).json({
+//     success: true,
+//     message: "Thanks for your feedback",
+//     data: newReview,
+//   });
+// });
 exports.createReview = asyncError(async (req, res, next) => {
-  const { productId, comment, rating } = req.body;
-  if (!productId || !rating) {
-    return next(new Errorclass("Given informations are not enough", 400));
+  const { product, comment, rating } = req.body;
+  if (!product || !rating) {
+    return next(new ErrorClass("Please give ratings and other info", 400));
   }
 
-  const product = await productModel.findById(productId);
-  if (!product) {
+  const targeted_product = await productModel.findById(product);
+  if (!targeted_product) {
     return next(new ErrorClass("Product not found", 400));
   }
 
   const review = await reviewModel.find({
     user: req.user._id,
-    product: productId,
+    product: product,
   });
   if (review.length > 0) {
     return next(
@@ -26,16 +64,17 @@ exports.createReview = asyncError(async (req, res, next) => {
   }
 
   const newReview = await reviewModel.create({
-    product: productId,
+    product: product,
     comment,
     rating,
     user: req.user._id,
   });
 
-  product.totalReviews += 1;
-  product.totalRating += rating;
-  product.avg_rating = product.totalRating / product.totalReviews;
-  await product.save();
+  targeted_product.totalReviews += 1;
+  targeted_product.totalRating += rating;
+  targeted_product.avg_rating =
+    targeted_product.totalRating / targeted_product.totalReviews;
+  await targeted_product.save();
 
   res.status(201).json({
     success: true,
@@ -117,7 +156,9 @@ exports.deleteSingleReview = asyncError(async (req, res, next) => {
 });
 
 exports.getUserAllReviews = asyncError(async (req, res) => {
-  const reviews = await reviewModel.find({ user: req.user._id });
+  const reviews = await reviewModel
+    .find({ user: req.user._id })
+    .populate("product");
 
   res.status(200).json({
     success: true,
