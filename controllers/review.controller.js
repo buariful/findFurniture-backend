@@ -72,8 +72,9 @@ exports.createReview = asyncError(async (req, res, next) => {
 
   targeted_product.totalReviews += 1;
   targeted_product.totalRating += rating;
-  targeted_product.avg_rating =
-    targeted_product.totalRating / targeted_product.totalReviews;
+  targeted_product.avg_rating = (
+    targeted_product.totalRating / targeted_product.totalReviews
+  ).toFixed(1);
   await targeted_product.save();
 
   res.status(201).json({
@@ -155,11 +156,14 @@ exports.deleteSingleReview = asyncError(async (req, res, next) => {
   });
 });
 
-exports.getUserAllReviews = asyncError(async (req, res) => {
+exports.getUserAllReviews = asyncError(async (req, res, next) => {
   const reviews = await reviewModel
     .find({ user: req.user._id })
     .populate("product");
 
+  if (reviews.length < 1) {
+    return next(new ErrorClass("No reviews found", 400));
+  }
   res.status(200).json({
     success: true,
     data: reviews,
