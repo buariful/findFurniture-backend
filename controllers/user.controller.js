@@ -1,7 +1,8 @@
 const asyncError = require("../middleware/asyncError");
 const userModel = require("../models/user.model");
 const ErrorClass = require("../utils/ErrorClass");
-const cloudinary = require("../utils/cloudinary");
+const cloudinaryConfig = require("../utils/cloudinary");
+const imageUpload = require("../utils/imageUpload");
 const { setCookie } = require("../utils/setCookie");
 
 exports.registerUser = asyncError(async (req, res, next) => {
@@ -161,4 +162,57 @@ exports.deletProdFromWishList = asyncError(async (req, res, next) => {
     success: true,
     message: "Successfully removed the product",
   });
+});
+
+exports.updateUserProfile = asyncError(async (req, res, next) => {
+  const { name, email } = req.body;
+  let data = { name, email };
+  const isEmailExist = await userModel.findOne({ email });
+  if (isEmailExist && email !== req.user.email) {
+    return next(new ErrorClass("Email is in use. Please use another one", 400));
+  }
+
+  try {
+    if (req.file) {
+      let result;
+      if (req.user?.avatar?.publicId) {
+        const publicIdStr = req.user?.avatar?.publicId;
+        await cloudinaryConfig.uploader.destroy(publicIdStr);
+        result = await cloudinaryConfig.uploader.upload(req.file.path, {
+          public_id: publicIdStr,
+          transformation: [{ max_width: 512, max_height: 512 }],
+          max_bytes: 1000000,
+          quality: 80,
+        });
+      } else {
+        result = await cloudinaryConfig.uploader.upload(req.file.path, {
+          folder: "findFurniture",
+          quality: "auto",
+        });
+      }
+      data.avatar = {
+        url: result?.secure_url,
+        publicId: result?.public_id,
+        default: req.user?.avatar?.default,
+      };
+    }
+
+    const updateProfile = await userModel.findByIdAndUpdate(
+      req.user._id,
+      data,
+      {
+        new: true,
+      }
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: "Successfully updated your profile",
+      data: updateProfile,
+    });
+  } catch (error) {
+    return next(
+      new ErrorClass("Profile can not be updated, something went wrong", 400)
+    );
+  }
 });

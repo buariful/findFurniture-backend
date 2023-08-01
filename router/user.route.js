@@ -8,11 +8,13 @@ const {
   updateQuantityOfCartProduct,
   addProdToWishlist,
   deletProdFromWishList,
+  updateUserProfile,
 } = require("../controllers/user.controller");
 const {
   isAuthenticated,
   roleAuthorize,
 } = require("../middleware/authentication");
+const upload = require("../middleware/multer");
 const multer = require("../middleware/multer");
 
 const router = require("express").Router();
@@ -38,3 +40,12 @@ router
   .route("/wishlist/delete")
   .put(isAuthenticated, roleAuthorize(["user"]), deletProdFromWishList);
 module.exports = router;
+
+router
+  .route("/user/profile")
+  .put(
+    isAuthenticated,
+    roleAuthorize(["user"]),
+    upload.single("image"),
+    updateUserProfile
+  );
