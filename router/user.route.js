@@ -9,6 +9,7 @@ const {
   addProdToWishlist,
   deletProdFromWishList,
   updateUserProfile,
+  updatePassword,
 } = require("../controllers/user.controller");
 const {
   isAuthenticated,
@@ -49,3 +50,4 @@ router
     upload.single("image"),
     updateUserProfile
   );
+router.route("/user/password").put(isAuthenticated, updatePassword);

@@ -216,3 +216,21 @@ exports.updateUserProfile = asyncError(async (req, res, next) => {
     );
   }
 });
+
+exports.updatePassword = asyncError(async (req, res, next) => {
+  const { oldPassword, newPassword, confirmPassword } = req.body;
+  if (newPassword !== confirmPassword) {
+    return next(
+      new ErrorClass("Your new and confirm password doesn't matched", 400)
+    );
+  }
+  const user = await userModel.findById(req.user._id).select("+password");
+  const isPassMatched = await user.comparePassword(oldPassword);
+  if (!isPassMatched) {
+    return next(new ErrorClass("Password doesn't matched", 400));
+  }
+
+  user.password = newPassword;
+  await user.save();
+  setCookie(user, 200, res, "Password updating successful");
+});
