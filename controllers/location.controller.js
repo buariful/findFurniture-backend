@@ -31,6 +31,8 @@ exports.getAllLocations = asyncError(async (req, res) => {
     result = locations[0].locations.divisions;
   } else if (keyword === "district") {
     result = locations[0].locations.districts;
+  } else if (keyword === "upazila") {
+    result = locations[0].locations.upazilas;
   } else {
     return next(new ErrorClass("keyword not correct", 400));
   }

@@ -5,15 +5,17 @@ const brandSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  label: {
+    type: String,
+    required: true,
+  },
+  value: {
+    type: String,
+    required: true,
+  },
   estabished: {
     type: Date,
   },
-  // products: [
-  //   {
-  //     type: mongoose.Schema.Types.ObjectId,
-  //     ref: "ProductModel",
-  //   },
-  // ],
 });
 
 module.exports = mongoose.model("BrandModel", brandSchema);
