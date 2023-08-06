@@ -104,11 +104,9 @@ exports.createProduct = asyncError(async (req, res, next) => {
     description,
     stock,
   } = req.body;
-
   if (
     !name ||
     !price ||
-    !sellPrice ||
     !brand ||
     !category ||
     !relatedProducts_categories ||
