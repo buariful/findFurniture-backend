@@ -44,10 +44,5 @@ module.exports = router;
 
 router
   .route("/user/profile")
-  .put(
-    isAuthenticated,
-    roleAuthorize(["user"]),
-    upload.single("image"),
-    updateUserProfile
-  );
+  .put(isAuthenticated, upload.single("image"), updateUserProfile);
 router.route("/user/password").put(isAuthenticated, updatePassword);
