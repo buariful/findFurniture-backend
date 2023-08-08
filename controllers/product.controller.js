@@ -52,58 +52,6 @@ exports.getSingleProduct = asyncError(async (req, res, next) => {
 });
 
 // -- Admin
-exports.updateProduct = asyncError(async (req, res, next) => {
-  const id = req.params.id;
-  const updateProductInfo = req.body;
-  const { sellPrice, price } = req.body;
-
-  if (sellPrice > price || sellPrice === price) {
-    return next(
-      new ErrorClass("Sellprice should be smaller than product price")
-    );
-  }
-  if (!sellPrice) {
-    updateProductInfo.discount = null;
-  } else {
-    const subOfPrices = JSON.parse(price) - JSON.parse(sellPrice);
-    updateProductInfo.discount = parseInt((subOfPrices * 100) / price);
-  }
-  const product = await productModel
-    .findByIdAndUpdate(id, updateProductInfo, {
-      new: true,
-    })
-    .populate("brand", "name");
-
-  if (!product) {
-    return next(new ErrorClass("No product found", 400));
-  }
-
-  res.status(200).json({
-    success: true,
-    message: "Product updated successfully",
-    data: product,
-  });
-});
-
-// --Admin
-exports.deleteProduct = asyncError(async (req, res, next) => {
-  const id = req.params.id;
-  const deletedProduct = await productModel.findByIdAndDelete(id, {
-    new: true,
-  });
-
-  if (!deletedProduct) {
-    return next(new ErrorClass("Product not found or cannot be deleted", 400));
-  }
-
-  res.status(200).json({
-    success: true,
-    message: "Product deleted successfully",
-    data: deletedProduct,
-  });
-});
-
-// -- Admin
 exports.createProduct = asyncError(async (req, res, next) => {
   const {
     name,
@@ -176,6 +124,80 @@ exports.createProduct = asyncError(async (req, res, next) => {
     success: true,
     message: "Successfully product created",
     data: newProduct,
+  });
+});
+
+// -- Admin
+exports.updateProduct = asyncError(async (req, res, next) => {
+  const id = req.params.id;
+  const updateProductInfo = req.body;
+  const { sellPrice, price } = req.body;
+
+  if (sellPrice > price || sellPrice === price) {
+    return next(
+      new ErrorClass("Sellprice should be smaller than product price")
+    );
+  }
+  if (!sellPrice) {
+    updateProductInfo.discount = null;
+  } else {
+    const subOfPrices = JSON.parse(price) - JSON.parse(sellPrice);
+    updateProductInfo.discount = parseInt((subOfPrices * 100) / price);
+  }
+  const product = await productModel
+    .findByIdAndUpdate(id, updateProductInfo, {
+      new: true,
+    })
+    .populate("brand", "name");
+
+  if (!product) {
+    return next(new ErrorClass("No product found", 400));
+  }
+
+  res.status(200).json({
+    success: true,
+    message: "Product updated successfully",
+    data: product,
+  });
+});
+
+// --Admin
+exports.deleteProduct = asyncError(async (req, res, next) => {
+  const id = req.params.id;
+  const deletedProduct = await productModel.findByIdAndDelete(id, {
+    new: true,
+  });
+
+  if (!deletedProduct) {
+    return next(new ErrorClass("Product not found or cannot be deleted", 400));
+  }
+
+  res.status(200).json({
+    success: true,
+    message: "Product deleted successfully",
+    data: deletedProduct,
+  });
+});
+
+// --Admin
+exports.addProdImages = asyncError(async (req, res, next) => {
+  const { productId } = req.params;
+  const product = await productModel.findById(productId);
+
+  if (!product) {
+    return next(new ErrorClass("Product not found", 400));
+  }
+  if (req.files.length <= 0) {
+    return next(new ErrorClass("Images not found", 400));
+  }
+  const images = await imageUpload(req);
+  product.images = [...product.images, ...images];
+  await product.save();
+
+  res.status(200).json({
+    success: true,
+    message: "Image uploaded successfully",
+    data: product,
   });
 });
 
