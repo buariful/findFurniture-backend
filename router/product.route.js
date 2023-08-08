@@ -6,6 +6,7 @@ const {
   deleteProduct,
   deleteAllProducts,
   addProdImages,
+  deleteProdImage,
 } = require("../controllers/product.controller");
 const upload = require("../middleware/multer");
 const {
@@ -41,6 +42,7 @@ router
     roleAuthorize(["admin"]),
     upload.array("images", 10),
     addProdImages
-  );
+  )
+  .delete(isAuthenticated, roleAuthorize(["admin"]), deleteProdImage);
 
 module.exports = router;

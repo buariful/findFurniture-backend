@@ -5,6 +5,7 @@ const productModel = require("../models/product.model");
 const ErrorClass = require("../utils/ErrorClass");
 const ProductFilter = require("../utils/productFilter");
 const getRandomProducts = require("../utils/getRandomProducts");
+const cloudinaryConfig = require("../utils/cloudinary");
 
 exports.getProducts = asyncError(async (req, res) => {
   const result = new ProductFilter(productModel.find(), req.query)
@@ -199,6 +200,23 @@ exports.addProdImages = asyncError(async (req, res, next) => {
     message: "Image uploaded successfully",
     data: product,
   });
+});
+
+// --Admin
+exports.deleteProdImage = asyncError(async (req, res, next) => {
+  const { productId } = req.params;
+  const { publicIdStr } = req.body;
+  const product = await productModel.findById(productId);
+  if (!product) {
+    return next(new ErrorClass("Product not found", 400));
+  }
+
+  await cloudinaryConfig.uploader.destroy(publicIdStr);
+  const images = product.images.filter((img) => img.publicId !== publicIdStr);
+  product.images = images;
+  await product.save();
+
+  res.status(200).json({ success: true, message: "Image deleted" });
 });
 
 /* ==========================
