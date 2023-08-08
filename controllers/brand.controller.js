@@ -14,7 +14,7 @@ exports.getAllBrands = asyncError(async (_req, res) => {
 
 // -- Admin
 exports.createBrand = asyncError(async (req, res, next) => {
-  const { name, estabished } = req.body;
+  const { name, estabished, label, value } = req.body;
   const isBrandExist = await brandModel.findOne({
     name: { $regex: name, $options: "i" },
   });
@@ -24,6 +24,8 @@ exports.createBrand = asyncError(async (req, res, next) => {
   const brand = await brandModel.create({
     name,
     estabished,
+    label,
+    value,
   });
 
   res.status(201).json({

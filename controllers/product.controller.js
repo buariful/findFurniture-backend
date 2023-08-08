@@ -55,6 +55,19 @@ exports.getSingleProduct = asyncError(async (req, res, next) => {
 exports.updateProduct = asyncError(async (req, res, next) => {
   const id = req.params.id;
   const updateProductInfo = req.body;
+  const { sellPrice, price } = req.body;
+
+  if (sellPrice > price || sellPrice === price) {
+    return next(
+      new ErrorClass("Sellprice should be smaller than product price")
+    );
+  }
+  if (!sellPrice) {
+    updateProductInfo.discount = null;
+  } else {
+    const subOfPrices = JSON.parse(price) - JSON.parse(sellPrice);
+    updateProductInfo.discount = parseInt((subOfPrices * 100) / price);
+  }
   const product = await productModel
     .findByIdAndUpdate(id, updateProductInfo, {
       new: true,
