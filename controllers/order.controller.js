@@ -6,6 +6,7 @@ const orderModel = require("../models/order.model");
 const ErrorClass = require("../utils/ErrorClass");
 const userModel = require("../models/user.model");
 const { orderDelete } = require("../utils/orderDelete");
+const OrderFilter = require("../utils/orderFilter");
 
 exports.placeOrder = asyncError(async (req, res, next) => {
   const { products, shipping_time, shipping_cost, address, personalInfo } =
@@ -127,11 +128,25 @@ exports.getUserOrders = asyncError(async (req, res, next) => {
   });
 });
 exports.getAllOrders = asyncError(async (req, res) => {
-  const orders = await orderModel.find({}).populate("products");
+  const order = new OrderFilter(orderModel.find(), req.query).filter();
+
+  let result = await order.query.populate("products");
+  const result_count = result.length;
+
+  order.pagination();
+  result = await order.query;
 
   res.status(200).json({
     success: true,
-    totalResult: orders.length,
-    data: orders,
+    totalResult: result_count,
+    data: result,
   });
 });
+
+// const orders = await orderModel.find({}).populate("products");
+
+// res.status(200).json({
+//   success: true,
+//   totalResult: orders.length,
+//   data: orders,
+// });

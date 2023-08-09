@@ -55,38 +55,10 @@ class ProductFilter {
     if (discount === "false") {
       filter.discount = null;
     }
-    
+
     this.query = this.query.find(filter);
     return this;
   }
-
-  // filter() {
-  //   const { categories, colors, brands, discount } = this.queryStr;
-
-  //   let filter = {};
-  //   if (categories) {
-  //     const categoryArray = categories.split(",");
-  //     filter.category = { $in: categoryArray };
-  //   }
-  //   if (colors) {
-  //     const colorArray = colors.split(",");
-  //     filter.colors = { $in: colorArray };
-  //   }
-  //   if (brands) {
-  //     const brandArray = brands.split(",");
-  //     filter.brand = { $in: brandArray };
-  //   }
-  //   if (discount === "true") {
-  //     filter.discount = { $gt: 0 };
-  //   }
-
-  //   if (discount === "false") {
-  //     filter.discount = null;
-  //   }
-  //   console.log(filter);
-  //   this.query = this.query.find(filter);
-  //   return this;
-  // }
 
   pagination(resultPerPage) {
     const currentPage = Number(this.queryStr.page) || 1;
