@@ -143,10 +143,23 @@ exports.getAllOrders = asyncError(async (req, res) => {
   });
 });
 
-// const orders = await orderModel.find({}).populate("products");
-
-// res.status(200).json({
-//   success: true,
-//   totalResult: orders.length,
-//   data: orders,
-// });
+exports.updateOrderStatus = asyncError(async (req, res, next) => {
+  const { orders, status } = req.body;
+  console.log(orders);
+  try {
+    console.log("orders");
+    const result = await orderModel.updateMany(
+      { _id: { $in: orders } },
+      { $set: { isDelivered: status } },
+      { new: true }
+    );
+    console.log("end");
+    res.status(200).json({
+      success: true,
+      message: "Orders updated successfully",
+      data: result,
+    });
+  } catch (error) {
+    return next(new ErrorClass("Orders cannot be updated", 400));
+  }
+});

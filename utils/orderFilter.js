@@ -6,12 +6,11 @@ class OrderFilter {
 
   filter() {
     const { delivered } = this.queryStr;
-
     let filter;
-    if (delivered === undefined) {
-      filter = {};
-    } else {
+    if (delivered === "true" || delivered === "false") {
       filter = { isDelivered: delivered };
+    } else {
+      filter = {};
     }
     this.query = this.query.find(filter);
     return this;

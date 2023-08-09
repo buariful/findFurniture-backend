@@ -6,6 +6,7 @@ const {
   orderFail,
   getAllOrders,
   getUserOrders,
+  updateOrderStatus,
 } = require("../controllers/order.controller");
 const {
   isAuthenticated,
@@ -30,5 +31,9 @@ router
 router
   .route("/order/all")
   .get(isAuthenticated, roleAuthorize(["admin"]), getAllOrders);
+
+router
+  .route("/order/update")
+  .put(isAuthenticated, roleAuthorize(["admin"]), updateOrderStatus);
 
 module.exports = router;
