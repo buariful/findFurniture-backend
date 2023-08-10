@@ -6,6 +6,7 @@ const ErrorClass = require("../utils/ErrorClass");
 const ProductFilter = require("../utils/productFilter");
 const getRandomProducts = require("../utils/getRandomProducts");
 const cloudinaryConfig = require("../utils/cloudinary");
+const orderModel = require("../models/order.model");
 
 exports.getProducts = asyncError(async (req, res) => {
   const result = new ProductFilter(productModel.find(), req.query)
@@ -165,6 +166,19 @@ exports.updateProduct = asyncError(async (req, res, next) => {
 // --Admin
 exports.deleteProduct = asyncError(async (req, res, next) => {
   const id = req.params.id;
+  const orderOfProduct = await orderModel.find({
+    products: id,
+    isDelivered: false,
+  });
+
+  if (orderOfProduct.length > 0) {
+    return next(
+      new ErrorClass(
+        "Product cannot be deleted. User's order has not been delivered yet.",
+        400
+      )
+    );
+  }
   const deletedProduct = await productModel.findByIdAndDelete(id, {
     new: true,
   });
