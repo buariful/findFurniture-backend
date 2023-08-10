@@ -4,6 +4,8 @@ exports.setCookie = async (user, statusCode, res, message) => {
   const options = {
     expires: new Date(Date.now() + 3600 * 24 * 1000 * 5),
     httpOnly: true,
+    sameSite: "none",
+    secure: true,
   };
 
   const userWithoutPassword = user.toObject();

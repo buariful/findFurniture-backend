@@ -18,7 +18,6 @@ app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
 app.use(bodyParser.json({ limit: "20mb", extended: true }));
 app.use(cors({ origin: process.env.FRONTEND_URL, credentials: true }));
 app.use(cookieParser());
-console.log(process.env.FRONTEND_URL);
 
 app.use("/api/v1", userRouter);
 app.use("/api/v1", productRoute);
