@@ -127,14 +127,20 @@ exports.getUserOrders = asyncError(async (req, res, next) => {
     data: orders,
   });
 });
-exports.getAllOrders = asyncError(async (req, res) => {
+exports.getAllOrders = asyncError(async (req, res, next) => {
   const order = new OrderFilter(orderModel.find(), req.query).search().filter();
 
-  let result = await order.query.populate("products", "name");
+  let result = await order.query
+    .populate("products", "name")
+    .populate("customer", "avatar name email");
   const result_count = result.length;
 
   order.pagination();
   result = await order.query;
+
+  if (result.length <= 0) {
+    return next(new ErrorClass("No result found", 400));
+  }
 
   res.status(200).json({
     success: true,
