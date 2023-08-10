@@ -38,7 +38,8 @@ exports.login = asyncError(async (req, res, next) => {
     .populate(
       "cartItem.product",
       "name productCode price sellPrice images shippingCost"
-    );
+    )
+    .populate("wishList", "name productCode price sellPrice images stock");
   if (!user) {
     return next(new ErrorClass("Email or Password doesn't matched", 401));
   }

@@ -128,9 +128,9 @@ exports.getUserOrders = asyncError(async (req, res, next) => {
   });
 });
 exports.getAllOrders = asyncError(async (req, res) => {
-  const order = new OrderFilter(orderModel.find(), req.query).filter();
+  const order = new OrderFilter(orderModel.find(), req.query).search().filter();
 
-  let result = await order.query.populate("products");
+  let result = await order.query.populate("products", "name");
   const result_count = result.length;
 
   order.pagination();
@@ -145,15 +145,12 @@ exports.getAllOrders = asyncError(async (req, res) => {
 
 exports.updateOrderStatus = asyncError(async (req, res, next) => {
   const { orders, status } = req.body;
-  console.log(orders);
   try {
-    console.log("orders");
     const result = await orderModel.updateMany(
       { _id: { $in: orders } },
       { $set: { isDelivered: status } },
       { new: true }
     );
-    console.log("end");
     res.status(200).json({
       success: true,
       message: "Orders updated successfully",

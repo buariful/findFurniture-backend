@@ -3,6 +3,13 @@ class OrderFilter {
     this.query = query;
     this.queryStr = queryStr;
   }
+  search() {
+    const searchStr = this.queryStr.transId
+      ? { trans_id: this.queryStr.transId }
+      : {};
+    this.query = this.query.find(searchStr);
+    return this;
+  }
 
   filter() {
     const { delivered } = this.queryStr;
