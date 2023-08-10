@@ -55,6 +55,8 @@ exports.logOut = asyncError((_req, res) => {
   res.cookie("auth", null, {
     httpOnly: true,
     expires: new Date(Date.now()),
+    sameSite: "none",
+    secure: true,
   });
 
   res.status(200).json({
