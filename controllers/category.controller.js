@@ -6,7 +6,7 @@ const imageUpload = require("../utils/imageUpload");
 
 exports.getAllCategory = asyncError(async (_req, res) => {
   const categories = await categoryModel.find({});
-  res.status(201).json({
+  res.status(200).json({
     success: true,
     data: categories,
   });
