@@ -2,6 +2,7 @@ const asyncError = require("../middleware/asyncError");
 const userModel = require("../models/user.model");
 const ErrorClass = require("../utils/ErrorClass");
 const cloudinaryConfig = require("../utils/cloudinary");
+const FilterClass = require("../utils/filterClass");
 const imageUpload = require("../utils/imageUpload");
 const { setCookie } = require("../utils/setCookie");
 
@@ -239,6 +240,13 @@ exports.updatePassword = asyncError(async (req, res, next) => {
 });
 
 // --Admin
-// exports.getAllUsers = asyncError(async (_req,res)=>{
-//   const
-// })
+exports.getAllUsers = asyncError(async (req, res) => {
+  const users = new FilterClass(userModel.find(), req.query);
+  let result = await users.query;
+  const totalUsers = result.length;
+
+  users.pagination();
+  result = await users.query;
+
+  res.json({ success: true, totalResults: totalUsers, data: result });
+});

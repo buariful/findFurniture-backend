@@ -10,6 +10,7 @@ const {
   deletProdFromWishList,
   updateUserProfile,
   updatePassword,
+  getAllUsers,
 } = require("../controllers/user.controller");
 const {
   isAuthenticated,
@@ -46,3 +47,7 @@ router
   .route("/user/profile")
   .put(isAuthenticated, upload.single("image"), updateUserProfile);
 router.route("/user/password").put(isAuthenticated, updatePassword);
+
+router
+  .route("/user/all")
+  .get(isAuthenticated, roleAuthorize(["admin"]), getAllUsers);
