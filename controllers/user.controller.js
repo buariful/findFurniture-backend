@@ -237,3 +237,8 @@ exports.updatePassword = asyncError(async (req, res, next) => {
   await user.save();
   setCookie(user, 200, res, "Password updating successful");
 });
+
+// --Admin
+// exports.getAllUsers = asyncError(async (_req,res)=>{
+//   const
+// })

@@ -3,15 +3,15 @@ const imageUpload = require("../utils/imageUpload");
 const generateProductCode = require("../utils/generateProductCode");
 const productModel = require("../models/product.model");
 const ErrorClass = require("../utils/ErrorClass");
-const ProductFilter = require("../utils/productFilter");
 const getRandomProducts = require("../utils/getRandomProducts");
 const cloudinaryConfig = require("../utils/cloudinary");
 const orderModel = require("../models/order.model");
+const FilterClass = require("../utils/filterClass");
 
 exports.getProducts = asyncError(async (req, res) => {
-  const result = new ProductFilter(productModel.find(), req.query)
-    .search()
-    .filter();
+  const result = new FilterClass(productModel.find(), req.query)
+    .productSearch()
+    .productFilter();
 
   let products = await result.query;
   let filteredProductsCount = products.length;

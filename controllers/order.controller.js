@@ -6,7 +6,7 @@ const orderModel = require("../models/order.model");
 const ErrorClass = require("../utils/ErrorClass");
 const userModel = require("../models/user.model");
 const { orderDelete } = require("../utils/orderDelete");
-const OrderFilter = require("../utils/orderFilter");
+const FilterClass = require("../utils/filterClass");
 
 exports.placeOrder = asyncError(async (req, res, next) => {
   const { products, shipping_time, shipping_cost, address, personalInfo } =
@@ -128,7 +128,9 @@ exports.getUserOrders = asyncError(async (req, res, next) => {
   });
 });
 exports.getAllOrders = asyncError(async (req, res, next) => {
-  const order = new OrderFilter(orderModel.find(), req.query).search().filter();
+  const order = new FilterClass(orderModel.find(), req.query)
+    .orderSearch()
+    .orderFilter();
 
   let result = await order.query
     .populate("products", "name")
