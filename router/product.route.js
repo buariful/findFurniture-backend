@@ -26,10 +26,6 @@ router
   );
 
 router
-  .route("/product")
-  .get(getProducts)
-  .delete(isAuthenticated, roleAuthorize(["admin"]), deleteAllProducts);
-router
   .route("/product/:id")
   .get(getSingleProduct)
   .put(isAuthenticated, roleAuthorize(["admin"]), updateProduct)
