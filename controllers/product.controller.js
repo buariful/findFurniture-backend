@@ -16,7 +16,7 @@ exports.getProducts = asyncError(async (req, res) => {
   let products = await result.query;
   let filteredProductsCount = products.length;
 
-  result.pagination(10);
+  result.pagination();
 
   products = await result.query;
 

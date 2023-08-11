@@ -30,7 +30,7 @@ class ProductFilter {
   }
 
   filter() {
-    const { categories, colors, brands, discount } = this.queryStr;
+    const { categories, colors, brands, discount, stock } = this.queryStr;
 
     let filter = {};
     if (categories) {
@@ -55,19 +55,25 @@ class ProductFilter {
     if (discount === "false") {
       filter.discount = null;
     }
-
+    if (stock === "false") {
+      filter.stock = { $lte: 0 };
+    }
+    if (stock === "true") {
+      filter.stock = { $gte: 1 };
+    }
     this.query = this.query.find(filter);
     return this;
   }
 
-  pagination(resultPerPage) {
-    const currentPage = Number(this.queryStr.page) || 1;
-    const skipResults = resultPerPage * (currentPage - 1);
+  pagination() {
+    const limit = Number(this.queryStr.limit) || 10;
+    const page = Number(this.queryStr.page) || 1;
+    const skip = (page - 1) * limit;
 
     // Create a copy of the query object using clone()
     const clonedQuery = this.query.clone();
 
-    this.query = clonedQuery.limit(resultPerPage).skip(skipResults);
+    this.query = clonedQuery.skip(skip).limit(limit);
 
     return this;
   }
