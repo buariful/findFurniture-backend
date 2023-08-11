@@ -232,13 +232,3 @@ exports.deleteProdImage = asyncError(async (req, res, next) => {
 
   res.status(200).json({ success: true, message: "Image deleted" });
 });
-
-/* ==========================
-ONLY FOR DEVELOPING PURPOSE, NOT FOR PRODUCTION
-=============================*/
-
-exports.deleteAllProducts = asyncError(async (_req, res) => {
-  const result = await productModel.deleteMany({});
-
-  res.send(result);
-});
