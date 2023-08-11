@@ -166,6 +166,8 @@ exports.updateProduct = asyncError(async (req, res, next) => {
 // --Admin
 exports.deleteProduct = asyncError(async (req, res, next) => {
   const id = req.params.id;
+  const product = await productModel.findById(id);
+
   const orderOfProduct = await orderModel.find({
     products: id,
     isDelivered: false,
@@ -179,6 +181,12 @@ exports.deleteProduct = asyncError(async (req, res, next) => {
       )
     );
   }
+
+  await Promise.all(
+    product?.images.map(async (img) => {
+      await cloudinaryConfig.uploader.destroy(img.publicId);
+    })
+  );
   const deletedProduct = await productModel.findByIdAndDelete(id, {
     new: true,
   });

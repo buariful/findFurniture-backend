@@ -48,7 +48,6 @@ exports.deleteCategory = asyncError(async (req, res, next) => {
   const products = await productModel.find({
     category: { $regex: category, $options: "i" },
   });
-  console.log(products);
   if (products.length === 0) {
     await cloudinaryConfig.uploader.destroy(imgPublicId);
     const result = await categoryModel.findByIdAndDelete(categoryId);
@@ -59,7 +58,10 @@ exports.deleteCategory = asyncError(async (req, res, next) => {
     });
   } else {
     return next(
-      new ErrorClass("There are some products under this category", 400)
+      new ErrorClass(
+        `There are ${products.length} products under this category`,
+        400
+      )
     );
   }
 });

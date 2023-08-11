@@ -15,6 +15,7 @@ const brandSchema = new mongoose.Schema({
   },
   estabished: {
     type: Date,
+    required: true,
   },
 });
 

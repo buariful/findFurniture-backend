@@ -25,6 +25,7 @@ router
     createProduct
   );
 
+router.route("/product").get(getProducts);
 router
   .route("/product/:id")
   .get(getSingleProduct)

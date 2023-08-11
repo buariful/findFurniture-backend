@@ -1,5 +1,6 @@
 const asyncError = require("../middleware/asyncError");
 const brandModel = require("../models/brand.model");
+const productModel = require("../models/product.model");
 const ErrorClass = require("../utils/ErrorClass");
 
 exports.getAllBrands = asyncError(async (_req, res) => {
@@ -14,22 +15,23 @@ exports.getAllBrands = asyncError(async (_req, res) => {
 
 // -- Admin
 exports.createBrand = asyncError(async (req, res, next) => {
-  const { name, estabished, label, value } = req.body;
-  const isBrandExist = await brandModel.findOne({
+  const { name, estabished } = req.body;
+  const isBrandExist = await brandModel.find({
     name: { $regex: name, $options: "i" },
   });
-  if (isBrandExist) {
-    return next(new ErrorClass("Brand Exist", 400));
+  if (isBrandExist.length > 0) {
+    return next(new ErrorClass("Brand Exist with the same name", 400));
   }
   const brand = await brandModel.create({
     name,
+    label: name,
+    value: name,
     estabished,
-    label,
-    value,
   });
 
   res.status(201).json({
     success: true,
+    message: "Brand created successfully",
     data: brand,
   });
 });
@@ -37,12 +39,13 @@ exports.createBrand = asyncError(async (req, res, next) => {
 // ---Admin
 exports.deleteBrand = asyncError(async (req, res, next) => {
   const brandId = req.params.id;
-  const brand = await brandModel.findById(brandId);
-
-  if (brand.products.length > 0) {
+  const { name } = req.body;
+  const product = await productModel.find({
+    brand: { $regex: name, $options: "i" },
+  });
+  if (product.length > 0) {
     return next(
-      new ErrorClass("This brand cann't be deleted for having products"),
-      400
+      new ErrorClass(`${product.length} products under this brand.`, 400)
     );
   }
 
