@@ -96,12 +96,18 @@ class FilterClass {
   }
 
   orderFilter() {
-    const { delivered } = this.queryStr;
-    let filter;
+    const { delivered, expired, transId } = this.queryStr;
+    let filter = {};
     if (delivered === "true" || delivered === "false") {
-      filter = { isDelivered: delivered };
-    } else {
-      filter = {};
+      filter.isDelivered = delivered;
+    }
+    if (expired === "true") {
+      const currentDate = new Date();
+      const queryObj = {
+        shipping_time: { $lt: currentDate },
+        isDelivered: false,
+      };
+      filter = queryObj;
     }
     this.query = this.query.find(filter);
     return this;

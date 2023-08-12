@@ -16,7 +16,7 @@ const orderSchema = new mongoose.Schema({
     required: [true, "Shipping cost is undefined"],
   },
   shipping_time: {
-    type: Number,
+    type: Date,
     required: [true, "Shipping time is undefined"],
   },
   shipping_address: {

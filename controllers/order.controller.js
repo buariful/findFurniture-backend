@@ -58,7 +58,9 @@ exports.placeOrder = asyncError(async (req, res, next) => {
     customer: req.user._id,
     total_amount: order_amount,
     shipping_cost,
-    shipping_time,
+    shipping_time: new Date(
+      Date.now() + Number(shipping_time) * 24 * 1000 * 3600
+    ),
     shipping_address: address,
     products,
   });
