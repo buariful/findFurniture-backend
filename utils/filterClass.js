@@ -30,9 +30,30 @@ class FilterClass {
   }
 
   productFilter() {
-    const { categories, colors, brands, discount, stock } = this.queryStr;
+    const { highPrice, lowPrice, categories, colors, brands, discount, stock } =
+      this.queryStr;
 
     let filter = {};
+    if (highPrice && lowPrice) {
+      filter.$or = [
+        {
+          $and: [
+            {
+              price: { $lte: Number(highPrice) },
+            },
+            { price: { $gte: Number(lowPrice) } },
+          ],
+        },
+        {
+          $and: [
+            {
+              sellPrice: { $lte: Number(highPrice) },
+            },
+            { sellPrice: { $gte: Number(lowPrice) } },
+          ],
+        },
+      ];
+    }
     if (categories) {
       const categoryArray = categories.split(",");
       filter.category = {
@@ -61,6 +82,7 @@ class FilterClass {
     if (stock === "true") {
       filter.stock = { $gte: 1 };
     }
+
     this.query = this.query.find(filter);
     return this;
   }
