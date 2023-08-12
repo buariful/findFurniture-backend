@@ -2,8 +2,8 @@ class FilterClass {
   constructor(query, queryStr) {
     this.query = query;
     this.queryStr = queryStr;
+    this.conditions = [];
   }
-
   productSearch() {
     const keyword = this.queryStr.keyword
       ? {
@@ -23,37 +23,51 @@ class FilterClass {
           ],
         }
       : {};
-
-    this.query = this.query.find({ ...keyword });
+    this.conditions.push(keyword);
 
     return this;
   }
 
+  productPriceFilter() {
+    const { highPrice, lowPrice } = this.queryStr;
+    if (highPrice && lowPrice) {
+      const priceFilter = {
+        $or: [
+          {
+            $and: [
+              {
+                price: { $lte: highPrice },
+              },
+              { price: { $gte: lowPrice } },
+            ],
+          },
+          {
+            $and: [
+              {
+                sellPrice: { $lte: highPrice },
+              },
+              { sellPrice: { $gte: lowPrice } },
+            ],
+          },
+        ],
+      };
+      this.conditions.push(priceFilter);
+    }
+
+    return this;
+  }
+
+  async getResult() {
+    if (this.conditions.length > 0) {
+      this.query = this.query.find({ $and: this.conditions });
+    }
+    return await this.query;
+  }
+
   productFilter() {
-    const { highPrice, lowPrice, categories, colors, brands, discount, stock } =
-      this.queryStr;
+    const { categories, colors, brands, discount, stock } = this.queryStr;
 
     let filter = {};
-    if (highPrice && lowPrice) {
-      filter.$or = [
-        {
-          $and: [
-            {
-              price: { $lte: Number(highPrice) },
-            },
-            { price: { $gte: Number(lowPrice) } },
-          ],
-        },
-        {
-          $and: [
-            {
-              sellPrice: { $lte: Number(highPrice) },
-            },
-            { sellPrice: { $gte: Number(lowPrice) } },
-          ],
-        },
-      ];
-    }
     if (categories) {
       const categoryArray = categories.split(",");
       filter.category = {
@@ -82,7 +96,6 @@ class FilterClass {
     if (stock === "true") {
       filter.stock = { $gte: 1 };
     }
-
     this.query = this.query.find(filter);
     return this;
   }

@@ -11,13 +11,11 @@ const FilterClass = require("../utils/filterClass");
 exports.getProducts = asyncError(async (req, res) => {
   const result = new FilterClass(productModel.find(), req.query)
     .productSearch()
-    .productFilter();
-
-  let products = await result.query;
+    .productFilter()
+    .productPriceFilter();
+  let products = await result.getResult();
   let filteredProductsCount = products.length;
-
   result.pagination();
-
   products = await result.query;
 
   if (filteredProductsCount === 0) {
