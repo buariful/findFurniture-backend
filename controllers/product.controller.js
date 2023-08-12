@@ -88,6 +88,15 @@ exports.createProduct = asyncError(async (req, res, next) => {
     );
   }
 
+  if (price <= sellPrice) {
+    return next(
+      new ErrorClass(
+        "Product sell-price should be smaller than it's price",
+        400
+      )
+    );
+  }
+
   const productCode = await generateProductCode();
 
   let images = [];
