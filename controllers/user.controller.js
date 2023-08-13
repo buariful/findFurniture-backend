@@ -74,7 +74,7 @@ exports.getUserByCookie = asyncError((req, res) => {
 });
 
 exports.addProdToCart = asyncError(async (req, res, next) => {
-  const { productId } = req.body;
+  const { productId, quantity } = req.body;
   const user = await userModel.findById(req.user._id);
 
   const isProdExist = user.cartItem.find(
@@ -86,7 +86,7 @@ exports.addProdToCart = asyncError(async (req, res, next) => {
 
   user.cartItem.push({
     product: productId,
-    quantity: 1,
+    quantity: quantity || 1,
   });
   await user.save();
 
