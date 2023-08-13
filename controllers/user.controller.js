@@ -1,4 +1,5 @@
 const asyncError = require("../middleware/asyncError");
+const productModel = require("../models/product.model");
 const userModel = require("../models/user.model");
 const ErrorClass = require("../utils/ErrorClass");
 const cloudinaryConfig = require("../utils/cloudinary");
@@ -84,15 +85,36 @@ exports.addProdToCart = asyncError(async (req, res, next) => {
     return next(new ErrorClass("Product already exist in your cart", 400));
   }
 
+  const product = await productModel.findById(productId);
+  if (!product) {
+    return next(new ErrorClass("Product not found", 400));
+  }
+
   user.cartItem.push({
     product: productId,
     quantity: quantity || 1,
   });
   await user.save();
 
+  const item = user.cartItem[user.cartItem.length - 1];
+  const result = {
+    product: {
+      _id: product._id,
+      name: product.name,
+      productCode: product.productCode,
+      images: product.images,
+      price: product.price,
+      sellPrice: product.sellPrice,
+      stock: product.stock,
+      shippingCost: product.shippingCost,
+    },
+    quantity: item.quantity,
+    _id: item._id,
+  };
+  console.log();
   res.status(200).json({
     success: true,
-    data: user.cartItem[user.cartItem.length - 1],
+    data: result,
     message: "Successfully added the product to cart",
   });
 });
