@@ -87,13 +87,26 @@ exports.createProduct = asyncError(async (req, res, next) => {
       )
     );
   }
-
   if (price <= sellPrice) {
     return next(
       new ErrorClass(
         "Product sell-price should be smaller than it's price",
         400
       )
+    );
+  }
+
+  const shippingInfo = JSON.parse(shippingCost);
+  const { freeShipping, lowShipping, highShipping } = shippingInfo;
+  if (
+    freeShipping.time <= 0 ||
+    lowShipping.time <= 0 ||
+    lowShipping.price <= 0 ||
+    highShipping.price <= 0 ||
+    highShipping.time <= 0
+  ) {
+    return next(
+      new ErrorClass("Shipping time and price should not be negative or 0", 400)
     );
   }
 
@@ -124,7 +137,7 @@ exports.createProduct = asyncError(async (req, res, next) => {
     category,
     colors: JSON.parse(colors),
     relatedProducts_categories: related_Categories,
-    shippingCost: JSON.parse(shippingCost),
+    shippingCost: shippingInfo,
     createdBy: req.user._id,
     description,
     stock,
