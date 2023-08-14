@@ -87,7 +87,7 @@ exports.createProduct = asyncError(async (req, res, next) => {
       )
     );
   }
-  if (price <= sellPrice) {
+  if (Number(price) <= Number(sellPrice)) {
     return next(
       new ErrorClass(
         "Product sell-price should be smaller than it's price",
