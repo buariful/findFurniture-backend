@@ -127,7 +127,7 @@ exports.getUserOrders = asyncError(async (req, res, next) => {
     .find({
       customer: userId,
     })
-    .populate("products");
+    .populate("products.item", "name");
   if (orders.length < 1) {
     return next(new ErrorClass("You haven't place any order yet.", 400));
   }
