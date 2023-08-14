@@ -26,9 +26,12 @@ const orderSchema = new mongoose.Schema({
   },
   products: [
     {
-      type: mongoose.Types.ObjectId,
-      required: [true, "Product is undefined"],
-      ref: "ProductModel",
+      item: {
+        type: mongoose.Types.ObjectId,
+        required: [true, "Product is undefined"],
+        ref: "ProductModel",
+      },
+      quantity: { type: Number, required: true },
     },
   ],
   isPaid: { type: Boolean, required: true, default: false },

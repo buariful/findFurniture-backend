@@ -8,6 +8,7 @@ const userModel = require("../models/user.model");
 const { orderDelete } = require("../utils/orderDelete");
 const FilterClass = require("../utils/filterClass");
 
+// products:[{item:"mongbd objectId",quanity}]
 exports.placeOrder = asyncError(async (req, res, next) => {
   const { products, shipping_time, shipping_cost, address, personalInfo } =
     req.body;
@@ -18,7 +19,7 @@ exports.placeOrder = asyncError(async (req, res, next) => {
   let order_amount = 0;
   await Promise.all(
     products?.map(async (prod) => {
-      const item = await productModel.findById(prod);
+      const item = await productModel.findById(prod.item);
       order_amount += item?.sellPrice ? item?.sellPrice : item?.price;
     })
   );
@@ -79,6 +80,14 @@ exports.orderSuccess = asyncError(async (req, res) => {
   const user = await userModel.findById(order?.customer);
   order.isPaid = true;
   user.cartItem = [];
+
+  await Promise.all(
+    order?.products?.map(async (prod) => {
+      const product = await productModel.findById(prod.item);
+      product.stock -= Number(prod.quantity);
+      await product.save();
+    })
+  );
 
   await order.save();
   await user.save();
